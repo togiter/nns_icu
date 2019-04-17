@@ -1,5 +1,5 @@
-pragma solidity >=0.4.21 < 0.6.0;
-contract NightNightSix{
+pragma solidity >=0.4.22 <0.6.0;
+contract Icu{
     struct Discuss{
         string poster;
         string content;
@@ -17,27 +17,46 @@ contract NightNightSix{
         Discuss[] discusses;
     }
 
-
+    constructor() public{
+    }
     Enterprise[] public enterprises;
-   
     //post enterprise info
-    function postEnterprise() public payable {
-        require(enterprise.name != "","enterprise name can not be empty!");
-        this.enterprises.push(enterprise);
+    function postEnterprise(
+        uint entId, 
+        string memory name, 
+        string memory department,
+        string memory city, 
+        string memory workSystem,
+        bytes memory proof,
+        string memory timeStr,
+        address poster) public payable {
+       // require(name!= "","enterprise name can not be empty!");
+        Discuss[] storage discusses;
+        Enterprise storage ent = Enterprise(
+            {
+            entId:enterprises.length+1,
+            name:name,
+            department:department,
+            city:city,
+            workSystem:workSystem,
+            timeStr:timeStr,
+            proof:proof,
+            poster:poster,
+            discusses:discusses});
+        enterprises.push(ent);
     }
      //post discuss
-    function postDiscuss(uint entId,Discuss discuss) public payable {
-        require(Discuss.content != "","content can not be empty!");
-        this.enterprises.push(enterprise);
-    }
-
-    //get the enterprise
-    function enterprise(uint entId) public returns(Enterprise enterprise) {
-        for(uint i = 0;i < this.enterprises.length;i++){
-            if(entId == this.enterprises[i].entId){
-                enterprise = this.enterprises[i];
+    function postDiscuss(string memory entName,string memory poster,string memory content,string memory timeStr) public payable {
+        require(bytes(content).length > 0,"content can not be empty!");
+        
+        Discuss storage discuss = Discuss({poster:poster,content:content,timeStr:timeStr});
+         for(uint i = 0;i < enterprises.length;i++){
+            string memory an = enterprises[i].name;
+            if(keccak256(abi.encodePacked(entName)) == keccak256(abi.encodePacked(an))){
+                 enterprises[i].discusses.push(discuss);
             }
         }
+        
     }
 
 }
