@@ -1,0 +1,45 @@
+ipfs中文白皮书
+https://gguoss.github.io/2017/05/28/ipfs/?nsukey=A85nhDC5LrJS7IEM39q5XdOc%2FVj3pVZq%2BLgpdw1g1vbelOSUdlIot4Vo%2FRLVdrB%2BtAx2WcM4t6lE2l6BkK6%2BY7SzUH1WzilnqLHMVXiOl96CblGh2H5Cxjen9T8sxWwz%2F9TVzUq16iT3%2Bucm6vkIoMghnQ9UmScPRw7ivDuvVTfsTq3mCUvwH91sf9Ip7yjTeU6KKiaGZxmXp9iGlTCz2Q%3D%3D
+
+命令行安装
+1.使用参考 https://www.hibtc.org/4312.html
+注意问题:使用go get安装可能会产生一些依赖包获取不到(被墙或者被迁移)的错误，
+2.最靠谱的是翻墙去官网https://docs.ipfs.io/introduction/install/安装,下载go-ipfs，然后[解压]进入[cd目录],运行./install.sh即可
+安装完之后 ipfs --help自行查看帮助选项
+
+设置存储目录 export IPFS_PATH=/path/to/ipfsrepo
+
+本人为Mac os系统,linux理应是大同小异
+启动本地节点服务
+1.初始化本地节点
+ipfs init
+会在/Users/[username]/.ipfs初始化节点,生成2048-bit的RSA密钥对，并返回当前的节点ID(nodeId),即peer identifity.
+
+2.启动节点守护进程
+ipfs demaon
+成功后会提示:
+API server listening on /ip4/127.0.0.1/tcp/5001
+WebUI: http://127.0.0.1:5001/webui
+Gateway (readonly) server listening on /ip4/127.0.0.1/tcp/8080
+
+上传/查看文件
+在所在目录vim test.txt  输入'hello ipfs.' 保存退出
+1.ipfs 上传文件
+ipfs add test.txt
+会返回added QmXEp2QoU6NUup2uxuEPzEaTkSt1hFy4XAUCt8q5YWqWH1 test.txt 中间那段就是text.txt对应的hash
+2.ipfs根据hash查看内容
+ipfs cat QmXEp2QoU6NUup2uxuEPzEaTkSt1hFy4XAUCt8q5YWqWH1 就可以看到hello ipfs.了
+
+其他操作自行ipfs --help
+
+当我们在前端通过js接口操作ipfs时，会遇到老生常谈的跨域问题，只需终端执行以下配置即可：
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT","GET", "POST", "OPTIONS"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Credentials '["true"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Headers '["Authorization"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Expose-Headers '["Location"]'
+
+
+
+
+
