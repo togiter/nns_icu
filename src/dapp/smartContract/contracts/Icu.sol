@@ -1,62 +1,32 @@
-pragma solidity >=0.4.22 <0.6.0;
+pragma solidity >=0.5.0 <0.7.0;
 contract Icu{
-    struct Discuss{
-        string poster;
-        string content;
-        string timeStr;
-    }
+    /*
+    * query key enterprise hash(data will be saved in ipfs) with name,color
+    * 
+    */
     struct Enterprise{
-        uint entId;
-        string name;
-        string department;
-        string city;
-        string workSystem;
-        bytes proof; 
-        string timeStr;
-        address poster;
-        Discuss[] discusses;
+        bytes32  name; 
+        bytes32 hash;
     }
+    //检索(name)通过日记结构来进行
+    event logEnterprise(address from,uint256 indexed enterpriseId, bytes32 indexed name,bytes32 hash);
+    uint256 enterprisesCount;
+    mapping(uint256=>Enterprise) enterprises;
 
-    constructor() public{
+    modifier out(uint256 entId){
+        require(enterprisesCount > entId && entId > 0,"empty enterpriseId");
+        _;
     }
-    Enterprise[] public enterprises;
-    //post enterprise info
-    function postEnterprise(
-        uint entId, 
-        string memory name, 
-        string memory department,
-        string memory city, 
-        string memory workSystem,
-        bytes memory proof,
-        string memory timeStr,
-        address poster) public payable {
-       // require(name!= "","enterprise name can not be empty!");
-        Discuss[] storage discusses;
-        Enterprise storage ent = Enterprise(
-            {
-            entId:enterprises.length+1,
-            name:name,
-            department:department,
-            city:city,
-            workSystem:workSystem,
-            timeStr:timeStr,
-            proof:proof,
-            poster:poster,
-            discusses:discusses});
-        enterprises.push(ent);
-    }
-     //post discuss
-    function postDiscuss(string memory entName,string memory poster,string memory content,string memory timeStr) public payable {
-        require(bytes(content).length > 0,"content can not be empty!");
-        
-        Discuss storage discuss = Discuss({poster:poster,content:content,timeStr:timeStr});
-         for(uint i = 0;i < enterprises.length;i++){
-            string memory an = enterprises[i].name;
-            if(keccak256(abi.encodePacked(entName)) == keccak256(abi.encodePacked(an))){
-                 enterprises[i].discusses.push(discuss);
-            }
-        }
-        
-    }
-
+    function saveEnterprise(bytes32 name,bytes32 hash) public{
+        enterprisesCount++;
+        enterprises[enterprisesCount] = Enterprise(name,hash);
+        emit logEnterprise(msg.sender,enterprisesCount,name,hash);
+    } 
 }
+/*
+*事件，日志这两个概念。事件发生后被记录到区块链上成为了日志。总的来说，事件强调功能，一种行为；日志强调存储，内容。
+*事件是以太坊EVM提供的一种日志基础设施。事件可以用来做操作记录，存储为日志。也可以用来实现一些交互功能，比如通知UI，返回函数调用结果等。
+*当定义的事件触发时，我们可以将事件存储到EVM的交易日志中，日志是区块链中的一种特殊数据结构。日志与合约关联，与合约的存储合并存入区块链中。
+*只要某个区块可以访问，其相关的日志就可以访问。但在合约中，我们不能直接访问日志和事件数据（即便是创建日志的合约）
+*链接：https://www.jianshu.com/p/131c07c6f72f
+*/
