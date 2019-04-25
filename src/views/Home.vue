@@ -1,18 +1,30 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <button @click="gotoEntSave">添加企业</button>
+    <button @click="gotoupload">upload</button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'home',
   components: {
-    HelloWorld
-  }
+
+  },
+    methods:{
+        gotoEntSave:function () {
+            this.$router.push({
+                path:'/save',
+                query:{}
+            })
+        },
+        gotoupload:function () {
+            this.$router.push({
+                path:'/upload',
+                query:{}
+            })
+        }
+    }
 }
 </script>

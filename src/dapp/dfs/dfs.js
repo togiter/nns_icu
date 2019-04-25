@@ -1,27 +1,37 @@
 const Dfs = require('ipfs');
-console.log("hre")
+
 //创建并返回分布式文件系统dfs节点
-const  dfs = new Dfs();
-dfs.on('ready',()=>{
- // // Your node is now ready to use \o/
-  console.log('Node is ready to use!')
+var dfs;
+if(dfs==undefined || dfs == null) {
+    dfs = new Dfs();
+    console.log('new dfs',dfs);
+}
+// console.log('dfs state',dfs.state);
+// if(dfs.state == 'stoped'){
+//     dfs.on('ready',()=>{
+//         // // Your node is now ready to use \o/
+//         console.log('Node is ready to use!')
+//
+//         dfs.start(error => {
+//
+//             if (error) {
+//                 return console.error('Node failed to start!', error)
+//             }
+//             console.log('Node started!')
+//         });
+//     });
+// }else if (dfs.state == 'running'){
+//
+// }
 
-  dfs.start(error => {
-
-    if (error) {
-      return console.error('Node failed to start!', error)
-    }
-    console.log('Node started!')
-  })
   //// stopping a node
   //node.stop(() => {
     //// node is now 'offline'
  // })
-});
 
-dfs.on('error',error=>{
-  console.log('error listen:',error.message);
-});
+// dfs.on('error',error=>{
+//   console.log('error listen:',error.message);
+// });
 
 
 //Add files and data.If no callback(function (err, res) {}) is passed, a promise is returned
@@ -80,7 +90,7 @@ function dfsGot(ipfsPath,callback) {
 }
 
 function dfsCat(ipfsPath,callback) {
-    console.log('dfsCat path can not be empty!',ipfsPath)
+    console.log('dfsCat path:',ipfsPath)
     if(ipfsPath == undefined || ipfsPath == null || ipfsPath.length <= 0) {
         console.log('hash can not be empty!')
         return;
