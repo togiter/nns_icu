@@ -8,6 +8,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "bs58": "^4.0.1",
     "core-js": "^2.6.5",
     "cube-ui": "~1.12.15",
     "ipfs": "^0.35.0",
