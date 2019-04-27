@@ -4,7 +4,7 @@ import { WEB3_URL } from '../configs';
 const fs = require('fs');
 // var solc = require('solc');
 const Web3 = require('web3');
-const contractJson = import('../smartContract/build/contracts/Icu.json')
+const contractJson = require('./../smartContract/build/contracts/Icu.json')
 // let source = fs.readFileSync('../smartContract/contracts/Icu.sol','utf-8').toString();
 // let result = solc.compile(source);
 // console.log('sol source',source);
@@ -13,9 +13,13 @@ const contractJson = import('../smartContract/build/contracts/Icu.json')
 var web3;
 var contract;
 loadWeb3(WEB3_URL);
-let addr = '0x05175B374444bd2c2828b5318e2D10B8CC998068';
+let addr = '0x370B65D543710582CfA2d47862C95070496cF063';
+console.log('cj',contractJson);
 getContract(contractJson['abi'],addr);
+//contractEvent();
 function loadWeb3(url){
+    web3 = new Web3(url);
+    web3.setProvider(url);
     let eth_url = url;
     if (typeof web3 !== 'undefined' && web3 != null) {
         console.log("web3", web3);
@@ -29,13 +33,25 @@ function loadWeb3(url){
     function getContract(abi,addr){
     if(contract !== undefined && contract != null) return contract;
     // let calcComplied = solc.compile(solidityCode);
-    console.log(abi);
+    console.log('abi',abi);
     if(web3 === undefined || web3 == null){
         loadWeb3(WEB3_URL);
     }
     //获取合约对象
     contract = web3.eth.Contract(abi,addr);
     console.log("contract",contract);
+   }
+   function contractEvent(){
+       if(contract === 'undefined' || contract == null){
+           getContract();
+       }
+       contract.events.logEnterprise((err,event)=>{
+           console.log('eventInfo',err,event);
+       }).on('data',(result)=>{
+        console.log('data',result);
+       }).on('changed',(result)=>{
+        console.log('changed',result);
+       }).on('error',console.error);
    }
 export {
     web3,

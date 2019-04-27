@@ -13,6 +13,7 @@ export default {
 
   },
     methods:{
+      
         gotoEntSave:function () {
             this.$router.push({
                 path:'/save',
