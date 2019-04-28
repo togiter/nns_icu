@@ -1,5 +1,5 @@
 import {web3,contract} from './web2eth'
-import {hexToHash,hashToHex,strToBytes} from '../../utils/convert'
+import {hexToHash,hashToHex,strToBytes,bytesToStr} from '../../utils/convert'
 import {dfsCat} from '../dfs/dfs'
 let defaultAccount;
 web3.eth.getAccounts().then((err,values)=>{
@@ -21,10 +21,11 @@ function web3SaveEnterprise(name,hash,callback){
         console.log('miss enterprise hash ');
         return;
     }
-    let bytesName;
-    bytesName = strToBytes(name,32);
+    let bytesName;// = web3.utils.stringToHex(name);
+     bytesName = strToBytes(name,32);
      console.log(name,'str to bytes',bytesName);
-
+    // bytesName = web3.utils.hexToBytes(bytesName);
+    // console.log('hex bytes',bytesName);
     let hash2Hex = hashToHex(hash);
     console.log(hash,'-to-hex',hash2Hex)
     let hex2bytes = web3.utils.hexToBytes(hash2Hex);
@@ -36,6 +37,10 @@ function web3SaveEnterprise(name,hash,callback){
     }).on('data',(result)=>{
      console.log('data',result);
      let returnVals = result.returnValues;
+     let name = returnVals.name;
+     name = web3.utils.hexToBytes(name);
+     name = bytesToStr(name);
+     console.log('name',name,name.toString());
      let hash = hexToHash(returnVals.hashStr);
      console.log("orgi Hash",hash);
      dfsCat(hash,(err,result)=>{
@@ -62,6 +67,16 @@ function web3SaveEnterprise(name,hash,callback){
 function web3GetEnterprise(enterpriseId,callback){
    contract.methods.getEnterprise(Number.parseInt(enterpriseId)).call({from:defaultAccount},(err,result)=>{
        console.log('err',err,'result',result)
+       let name = result.name;
+        name = web3.utils.hexToBytes(name);
+        name = bytesToStr(name);
+        console.log('name',name,name.toString());
+       let hexHash = result.hashStr;
+       let hash = hexToHash(hexHash);
+     console.log("hashStr",hash);
+     dfsCat(hash,(err,result)=>{
+        console.log(err,err,'resulthere',result);
+     });
    });
 }
 

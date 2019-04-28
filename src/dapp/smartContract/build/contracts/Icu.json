@@ -21,7 +21,7 @@
         },
         {
           "indexed": false,
-          "name": "hash",
+          "name": "hashStr",
           "type": "bytes32"
         }
       ],
@@ -37,7 +37,7 @@
           "type": "bytes32"
         },
         {
-          "name": "hash",
+          "name": "hashStr",
           "type": "bytes32"
         }
       ],
@@ -47,23 +47,47 @@
       "stateMutability": "nonpayable",
       "type": "function",
       "signature": "0xefce3e4b"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "entId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getEnterprise",
+      "outputs": [
+        {
+          "name": "name",
+          "type": "bytes32"
+        },
+        {
+          "name": "hashStr",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x0b68a9d3"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"name\",\"type\":\"bytes32\"},{\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"saveEnterprise\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"enterpriseId\",\"type\":\"uint256\"},{\"indexed\":true,\"name\":\"name\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"logEnterprise\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ysh/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol\":\"Icu\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ysh/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol\":{\"keccak256\":\"0x135f7a39061b61e743e1a0fe6d62a7ee6fca1ca831d476c11d388f6a5c7686f4\",\"urls\":[\"bzzr://6dc1ffc1244db97bfd6e6f4647eddcdc1c0297e9460bd296b986114b49a12d78\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5061017b806100206000396000f3fe608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063efce3e4b14610046575b600080fd5b34801561005257600080fd5b506100896004803603604081101561006957600080fd5b81019080803590602001909291908035906020019092919050505061008b565b005b600080815480929190600101919050555060408051908101604052808381526020018281525060016000805481526020019081526020016000206000820151816000015560208201518160010155905050816000547f3edf6caca4ece5fadb1fbae8b9b041b20da53367ea7753e5a704c9a5d024b1753384604051808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060405180910390a3505056fea165627a7a7230582065d818d83bec5592596aaa9a1b647b9e7b08de35786cbb53646b07242b0953470029",
-  "deployedBytecode": "0x608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063efce3e4b14610046575b600080fd5b34801561005257600080fd5b506100896004803603604081101561006957600080fd5b81019080803590602001909291908035906020019092919050505061008b565b005b600080815480929190600101919050555060408051908101604052808381526020018281525060016000805481526020019081526020016000206000820151816000015560208201518160010155905050816000547f3edf6caca4ece5fadb1fbae8b9b041b20da53367ea7753e5a704c9a5d024b1753384604051808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060405180910390a3505056fea165627a7a7230582065d818d83bec5592596aaa9a1b647b9e7b08de35786cbb53646b07242b0953470029",
-  "sourceMap": "32:768:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;32:768:0;;;;;;;",
-  "deployedSourceMap": "32:768:0:-;;;;;;;;;;;;;;;;;;;;;;;;575:222;;8:9:-1;5:2;;;30:1;27;20:12;5:2;575:222:0;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;575:222:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;642:16;;:18;;;;;;;;;;;;;702:21;;;;;;;;;713:4;702:21;;;;718:4;702:21;;;670:11;:29;682:16;;670:29;;;;;;;;;;;:53;;;;;;;;;;;;;;;;;;;780:4;763:16;;738:52;752:10;785:4;738:52;;;;;;;;;;;;;;;;;;;;;;;;;;;;575:222;;:::o",
-  "source": "pragma solidity >=0.5.0 <0.7.0;\ncontract Icu{\n    /*\n    * query key enterprise hash(data will be saved in ipfs) with name,color\n    * \n    */\n    struct Enterprise{\n        bytes32  name; \n        bytes32 hash;\n    }\n    //检索(name)通过日记结构来进行\n    event logEnterprise(address from,uint256 indexed enterpriseId, bytes32 indexed name,bytes32 hash);\n    uint256 enterprisesCount;\n    mapping(uint256=>Enterprise) enterprises;\n\n    modifier out(uint256 entId){\n        require(enterprisesCount > entId && entId > 0,\"empty enterpriseId\");\n        _;\n    }\n    function saveEnterprise(bytes32 name,bytes32 hash) public{\n        enterprisesCount++;\n        enterprises[enterprisesCount] = Enterprise(name,hash);\n        emit logEnterprise(msg.sender,enterprisesCount,name,hash);\n    } \n}\n/*\n*事件，日志这两个概念。事件发生后被记录到区块链上成为了日志。总的来说，事件强调功能，一种行为；日志强调存储，内容。\n*事件是以太坊EVM提供的一种日志基础设施。事件可以用来做操作记录，存储为日志。也可以用来实现一些交互功能，比如通知UI，返回函数调用结果等。\n*当定义的事件触发时，我们可以将事件存储到EVM的交易日志中，日志是区块链中的一种特殊数据结构。日志与合约关联，与合约的存储合并存入区块链中。\n*只要某个区块可以访问，其相关的日志就可以访问。但在合约中，我们不能直接访问日志和事件数据（即便是创建日志的合约）\n*链接：https://www.jianshu.com/p/131c07c6f72f\n*/",
-  "sourcePath": "/Users/ysh/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"entId\",\"type\":\"uint256\"}],\"name\":\"getEnterprise\",\"outputs\":[{\"name\":\"name\",\"type\":\"bytes32\"},{\"name\":\"hashStr\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"name\",\"type\":\"bytes32\"},{\"name\":\"hashStr\",\"type\":\"bytes32\"}],\"name\":\"saveEnterprise\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"enterpriseId\",\"type\":\"uint256\"},{\"indexed\":true,\"name\":\"name\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"hashStr\",\"type\":\"bytes32\"}],\"name\":\"logEnterprise\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/yangminghai/git_workplace/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol\":\"Icu\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/yangminghai/git_workplace/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol\":{\"keccak256\":\"0xeae1971c937f030b1fe39b484d570b7d92d53f05d48fe5dd65e18218898b99ae\",\"urls\":[\"bzzr://24a7ca884b1b71f8fb4a938bf27cdea3165cef4583c829b81a9786d4707eb5cd\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610292806100206000396000f3fe60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630b68a9d314610051578063efce3e4b146100a7575b600080fd5b34801561005d57600080fd5b5061008a6004803603602081101561007457600080fd5b81019080803590602001909291905050506100ec565b604051808381526020018281526020019250505060405180910390f35b3480156100b357600080fd5b506100ea600480360360408110156100ca57600080fd5b8101908080359060200190929190803590602001909291905050506101a2565b005b6000808280600054101580156101025750600081115b1515610176576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601b8152602001807f656e74657270726973654964206d75737420626520656d70747920000000000081525060200191505060405180910390fd5b600060016000868152602001908152602001600020905080600001549350806001015492505050915091565b600080815480929190600101919050555060408051908101604052808381526020018281525060016000805481526020019081526020016000206000820151816000015560208201518160010155905050816000547f3edf6caca4ece5fadb1fbae8b9b041b20da53367ea7753e5a704c9a5d024b1753384604051808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060405180910390a3505056fea165627a7a72305820174cdec095a5884d20ef443af0254e0b6977235a8064ea0928ffa9d9941492240029",
+  "deployedBytecode": "0x60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630b68a9d314610051578063efce3e4b146100a7575b600080fd5b34801561005d57600080fd5b5061008a6004803603602081101561007457600080fd5b81019080803590602001909291905050506100ec565b604051808381526020018281526020019250505060405180910390f35b3480156100b357600080fd5b506100ea600480360360408110156100ca57600080fd5b8101908080359060200190929190803590602001909291905050506101a2565b005b6000808280600054101580156101025750600081115b1515610176576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601b8152602001807f656e74657270726973654964206d75737420626520656d70747920000000000081525060200191505060405180910390fd5b600060016000868152602001908152602001600020905080600001549350806001015492505050915091565b600080815480929190600101919050555060408051908101604052808381526020018281525060016000805481526020019081526020016000206000820151816000015560208201518160010155905050816000547f3edf6caca4ece5fadb1fbae8b9b041b20da53367ea7753e5a704c9a5d024b1753384604051808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060405180910390a3505056fea165627a7a72305820174cdec095a5884d20ef443af0254e0b6977235a8064ea0928ffa9d9941492240029",
+  "sourceMap": "32:1073:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;32:1073:0;;;;;;;",
+  "deployedSourceMap": "32:1073:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;829:274;;8:9:-1;5:2;;;30:1;27;20:12;5:2;829:274:0;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;829:274:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;591:231;;8:9:-1;5:2;;;30:1;27;20:12;5:2;591:231:0;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;591:231:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;829:274;898:12;911:15;883:5;519;499:16;;:25;;:38;;;;;536:1;528:5;:9;499:38;491:77;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;938:22;963:11;:18;975:5;963:18;;;;;;;;;;;938:43;;998:3;:8;;;991:15;;1026:3;:11;;;1016:21;;578:1;829:274;;;;:::o;591:231::-;661:16;;:18;;;;;;;;;;;;;721:24;;;;;;;;;732:4;721:24;;;;737:7;721:24;;;689:11;:29;701:16;;689:29;;;;;;;;;;;:56;;;;;;;;;;;;;;;;;;;802:4;785:16;;760:55;774:10;807:7;760:55;;;;;;;;;;;;;;;;;;;;;;;;;;;;591:231;;:::o",
+  "source": "pragma solidity >=0.5.0 <0.7.0;\ncontract Icu{\n    /*\n    * query key enterprise hash(data will be saved in ipfs) with name,color\n    * \n    */\n    struct Enterprise{\n        bytes32  name; \n        bytes32 hashStr;\n    }\n    //检索(name)通过日记结构来进行\n    event logEnterprise(address from,uint256 indexed enterpriseId, bytes32 indexed name,bytes32 hashStr);\n    uint256 enterprisesCount;\n    mapping(uint256=>Enterprise) enterprises;\n\n    modifier out(uint256 entId){\n        require(enterprisesCount >= entId && entId > 0,\"enterpriseId must be empty \");\n        _;\n    }\n    function saveEnterprise(bytes32 name,bytes32 hashStr) public{\n        enterprisesCount++;\n        enterprises[enterprisesCount] = Enterprise(name,hashStr);\n        emit logEnterprise(msg.sender,enterprisesCount,name,hashStr);\n    } \n\n    function getEnterprise(uint256 entId) public view out(entId) returns(bytes32 name,bytes32 hashStr) {\n        Enterprise storage ent = enterprises[entId];\n        name = ent.name;\n        hashStr = ent.hashStr;\n        \n        \n        //return (ent.name,ent.hashStr);\n    }\n}\n/*\n*事件，日志这两个概念。事件发生后被记录到区块链上成为了日志。总的来说，事件强调功能，一种行为；日志强调存储，内容。\n*事件是以太坊EVM提供的一种日志基础设施。事件可以用来做操作记录，存储为日志。也可以用来实现一些交互功能，比如通知UI，返回函数调用结果等。\n*当定义的事件触发时，我们可以将事件存储到EVM的交易日志中，日志是区块链中的一种特殊数据结构。日志与合约关联，与合约的存储合并存入区块链中。\n*只要某个区块可以访问，其相关的日志就可以访问。但在合约中，我们不能直接访问日志和事件数据（即便是创建日志的合约）\n*链接：https://www.jianshu.com/p/131c07c6f72f\n*/",
+  "sourcePath": "/Users/yangminghai/git_workplace/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol",
   "ast": {
-    "absolutePath": "/Users/ysh/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol",
+    "absolutePath": "/Users/yangminghai/git_workplace/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol",
     "exportedSymbols": {
       "Icu": [
-        68
+        97
       ]
     },
-    "id": 69,
+    "id": 98,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -86,9 +110,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 68,
+        "id": 97,
         "linearizedBaseContracts": [
-          68
+          97
         ],
         "name": "Icu",
         "nodeType": "ContractDefinition",
@@ -126,10 +150,10 @@
               {
                 "constant": false,
                 "id": 5,
-                "name": "hash",
+                "name": "hashStr",
                 "nodeType": "VariableDeclaration",
                 "scope": 6,
-                "src": "198:12:0",
+                "src": "198:15:0",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -152,8 +176,8 @@
             ],
             "name": "Enterprise",
             "nodeType": "StructDefinition",
-            "scope": 68,
-            "src": "147:70:0",
+            "scope": 97,
+            "src": "147:73:0",
             "visibility": "public"
           },
           {
@@ -173,7 +197,7 @@
                   "name": "from",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "288:12:0",
+                  "src": "291:12:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -184,7 +208,7 @@
                     "id": 7,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "288:7:0",
+                    "src": "291:7:0",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -201,7 +225,7 @@
                   "name": "enterpriseId",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "301:28:0",
+                  "src": "304:28:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -212,7 +236,7 @@
                     "id": 9,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "301:7:0",
+                    "src": "304:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -228,7 +252,7 @@
                   "name": "name",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "331:20:0",
+                  "src": "334:20:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -239,7 +263,7 @@
                     "id": 11,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "331:7:0",
+                    "src": "334:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -252,10 +276,10 @@
                   "constant": false,
                   "id": 14,
                   "indexed": false,
-                  "name": "hash",
+                  "name": "hashStr",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "352:12:0",
+                  "src": "355:15:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -266,7 +290,7 @@
                     "id": 13,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "352:7:0",
+                    "src": "355:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -276,17 +300,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "287:78:0"
+              "src": "290:81:0"
             },
-            "src": "268:98:0"
+            "src": "271:101:0"
           },
           {
             "constant": false,
             "id": 18,
             "name": "enterprisesCount",
             "nodeType": "VariableDeclaration",
-            "scope": 68,
-            "src": "371:24:0",
+            "scope": 97,
+            "src": "377:24:0",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -297,7 +321,7 @@
               "id": 17,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "371:7:0",
+              "src": "377:7:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -311,8 +335,8 @@
             "id": 22,
             "name": "enterprises",
             "nodeType": "VariableDeclaration",
-            "scope": 68,
-            "src": "401:40:0",
+            "scope": 97,
+            "src": "407:40:0",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -325,14 +349,14 @@
                 "id": 19,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "409:7:0",
+                "src": "415:7:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
                 }
               },
               "nodeType": "Mapping",
-              "src": "401:28:0",
+              "src": "407:28:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Enterprise_$6_storage_$",
                 "typeString": "mapping(uint256 => struct Icu.Enterprise)"
@@ -343,7 +367,7 @@
                 "name": "Enterprise",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 6,
-                "src": "418:10:0",
+                "src": "424:10:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
                   "typeString": "struct Icu.Enterprise"
@@ -357,7 +381,7 @@
             "body": {
               "id": 38,
               "nodeType": "Block",
-              "src": "475:95:0",
+              "src": "481:105:0",
               "statements": [
                 {
                   "expression": {
@@ -392,14 +416,14 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 18,
-                            "src": "493:16:0",
+                            "src": "499:16:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
                           "nodeType": "BinaryOperation",
-                          "operator": ">",
+                          "operator": ">=",
                           "rightExpression": {
                             "argumentTypes": null,
                             "id": 28,
@@ -407,13 +431,13 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 24,
-                            "src": "512:5:0",
+                            "src": "519:5:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "493:24:0",
+                          "src": "499:25:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
@@ -439,7 +463,7 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 24,
-                            "src": "521:5:0",
+                            "src": "528:5:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -457,7 +481,7 @@
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "529:1:0",
+                            "src": "536:1:0",
                             "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
@@ -465,13 +489,13 @@
                             },
                             "value": "0"
                           },
-                          "src": "521:9:0",
+                          "src": "528:9:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
                           }
                         },
-                        "src": "493:37:0",
+                        "src": "499:38:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -479,7 +503,7 @@
                       },
                       {
                         "argumentTypes": null,
-                        "hexValue": "656d70747920656e74657270726973654964",
+                        "hexValue": "656e74657270726973654964206d75737420626520656d70747920",
                         "id": 34,
                         "isConstant": false,
                         "isLValue": false,
@@ -487,13 +511,13 @@
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "531:20:0",
+                        "src": "538:29:0",
                         "subdenomination": null,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_stringliteral_0243a560f7e4913f6c240dddc37c66af6402b1b720757de2ffc8317f87766c01",
-                          "typeString": "literal_string \"empty enterpriseId\""
+                          "typeIdentifier": "t_stringliteral_7baced1f00edf0d4aa3d902f525f0b07685b6c38bd30dda4e2053b5e466fbbc9",
+                          "typeString": "literal_string \"enterpriseId must be empty \""
                         },
-                        "value": "empty enterpriseId"
+                        "value": "enterpriseId must be empty "
                       }
                     ],
                     "expression": {
@@ -503,19 +527,19 @@
                           "typeString": "bool"
                         },
                         {
-                          "typeIdentifier": "t_stringliteral_0243a560f7e4913f6c240dddc37c66af6402b1b720757de2ffc8317f87766c01",
-                          "typeString": "literal_string \"empty enterpriseId\""
+                          "typeIdentifier": "t_stringliteral_7baced1f00edf0d4aa3d902f525f0b07685b6c38bd30dda4e2053b5e466fbbc9",
+                          "typeString": "literal_string \"enterpriseId must be empty \""
                         }
                       ],
                       "id": 26,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        143,
-                        144
+                        172,
+                        173
                       ],
-                      "referencedDeclaration": 144,
-                      "src": "485:7:0",
+                      "referencedDeclaration": 173,
+                      "src": "491:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
@@ -529,7 +553,7 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "485:67:0",
+                    "src": "491:77:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
@@ -537,12 +561,12 @@
                   },
                   "id": 36,
                   "nodeType": "ExpressionStatement",
-                  "src": "485:67:0"
+                  "src": "491:77:0"
                 },
                 {
                   "id": 37,
                   "nodeType": "PlaceholderStatement",
-                  "src": "562:1:0"
+                  "src": "578:1:0"
                 }
               ]
             },
@@ -560,7 +584,7 @@
                   "name": "entId",
                   "nodeType": "VariableDeclaration",
                   "scope": 39,
-                  "src": "461:13:0",
+                  "src": "467:13:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -571,7 +595,7 @@
                     "id": 23,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "461:7:0",
+                    "src": "467:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -581,16 +605,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "460:15:0"
+              "src": "466:15:0"
             },
-            "src": "448:122:0",
+            "src": "454:132:0",
             "visibility": "internal"
           },
           {
             "body": {
               "id": 66,
               "nodeType": "Block",
-              "src": "632:165:0",
+              "src": "651:171:0",
               "statements": [
                 {
                   "expression": {
@@ -603,7 +627,7 @@
                     "nodeType": "UnaryOperation",
                     "operator": "++",
                     "prefix": false,
-                    "src": "642:18:0",
+                    "src": "661:18:0",
                     "subExpression": {
                       "argumentTypes": null,
                       "id": 46,
@@ -611,7 +635,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 18,
-                      "src": "642:16:0",
+                      "src": "661:16:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -624,7 +648,7 @@
                   },
                   "id": 48,
                   "nodeType": "ExpressionStatement",
-                  "src": "642:18:0"
+                  "src": "661:18:0"
                 },
                 {
                   "expression": {
@@ -643,7 +667,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 22,
-                        "src": "670:11:0",
+                        "src": "689:11:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Enterprise_$6_storage_$",
                           "typeString": "mapping(uint256 => struct Icu.Enterprise storage ref)"
@@ -657,7 +681,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 18,
-                        "src": "682:16:0",
+                        "src": "701:16:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -668,7 +692,7 @@
                       "isPure": false,
                       "lValueRequested": true,
                       "nodeType": "IndexAccess",
-                      "src": "670:29:0",
+                      "src": "689:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_struct$_Enterprise_$6_storage",
                         "typeString": "struct Icu.Enterprise storage ref"
@@ -686,7 +710,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 41,
-                          "src": "713:4:0",
+                          "src": "732:4:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
                             "typeString": "bytes32"
@@ -695,11 +719,11 @@
                         {
                           "argumentTypes": null,
                           "id": 54,
-                          "name": "hash",
+                          "name": "hashStr",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 43,
-                          "src": "718:4:0",
+                          "src": "737:7:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
                             "typeString": "bytes32"
@@ -722,7 +746,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 6,
-                        "src": "702:10:0",
+                        "src": "721:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_type$_t_struct$_Enterprise_$6_storage_ptr_$",
                           "typeString": "type(struct Icu.Enterprise storage pointer)"
@@ -736,13 +760,13 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "702:21:0",
+                      "src": "721:24:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_struct$_Enterprise_$6_memory",
                         "typeString": "struct Icu.Enterprise memory"
                       }
                     },
-                    "src": "670:53:0",
+                    "src": "689:56:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_struct$_Enterprise_$6_storage",
                       "typeString": "struct Icu.Enterprise storage ref"
@@ -750,7 +774,7 @@
                   },
                   "id": 57,
                   "nodeType": "ExpressionStatement",
-                  "src": "670:53:0"
+                  "src": "689:56:0"
                 },
                 {
                   "eventCall": {
@@ -764,8 +788,8 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 140,
-                          "src": "752:3:0",
+                          "referencedDeclaration": 169,
+                          "src": "774:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
@@ -779,7 +803,7 @@
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": null,
-                        "src": "752:10:0",
+                        "src": "774:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address_payable",
                           "typeString": "address payable"
@@ -792,7 +816,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 18,
-                        "src": "763:16:0",
+                        "src": "785:16:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -805,7 +829,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 41,
-                        "src": "780:4:0",
+                        "src": "802:4:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
@@ -814,11 +838,11 @@
                       {
                         "argumentTypes": null,
                         "id": 63,
-                        "name": "hash",
+                        "name": "hashStr",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 43,
-                        "src": "785:4:0",
+                        "src": "807:7:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
@@ -849,7 +873,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 16,
-                      "src": "738:13:0",
+                      "src": "760:13:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_uint256_$_t_bytes32_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,uint256,bytes32,bytes32)"
@@ -863,7 +887,7 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "738:52:0",
+                    "src": "760:55:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
@@ -871,7 +895,7 @@
                   },
                   "id": 65,
                   "nodeType": "EmitStatement",
-                  "src": "733:57:0"
+                  "src": "755:60:0"
                 }
               ]
             },
@@ -892,7 +916,7 @@
                   "name": "name",
                   "nodeType": "VariableDeclaration",
                   "scope": 67,
-                  "src": "599:12:0",
+                  "src": "615:12:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -903,7 +927,7 @@
                     "id": 40,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "599:7:0",
+                    "src": "615:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -915,10 +939,10 @@
                 {
                   "constant": false,
                   "id": 43,
-                  "name": "hash",
+                  "name": "hashStr",
                   "nodeType": "VariableDeclaration",
                   "scope": 67,
-                  "src": "612:12:0",
+                  "src": "628:15:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -929,7 +953,7 @@
                     "id": 42,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "612:7:0",
+                    "src": "628:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -939,35 +963,384 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "598:27:0"
+              "src": "614:30:0"
             },
             "returnParameters": {
               "id": 45,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "632:0:0"
+              "src": "651:0:0"
             },
-            "scope": 68,
-            "src": "575:222:0",
+            "scope": 97,
+            "src": "591:231:0",
             "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 95,
+              "nodeType": "Block",
+              "src": "928:175:0",
+              "statements": [
+                {
+                  "assignments": [
+                    80
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 80,
+                      "name": "ent",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 95,
+                      "src": "938:22:0",
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                        "typeString": "struct Icu.Enterprise"
+                      },
+                      "typeName": {
+                        "contractScope": null,
+                        "id": 79,
+                        "name": "Enterprise",
+                        "nodeType": "UserDefinedTypeName",
+                        "referencedDeclaration": 6,
+                        "src": "938:10:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                          "typeString": "struct Icu.Enterprise"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 84,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "baseExpression": {
+                      "argumentTypes": null,
+                      "id": 81,
+                      "name": "enterprises",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 22,
+                      "src": "963:11:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Enterprise_$6_storage_$",
+                        "typeString": "mapping(uint256 => struct Icu.Enterprise storage ref)"
+                      }
+                    },
+                    "id": 83,
+                    "indexExpression": {
+                      "argumentTypes": null,
+                      "id": 82,
+                      "name": "entId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 69,
+                      "src": "975:5:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "963:18:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Enterprise_$6_storage",
+                      "typeString": "struct Icu.Enterprise storage ref"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "938:43:0"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 88,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 85,
+                      "name": "name",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 75,
+                      "src": "991:4:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 86,
+                        "name": "ent",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 80,
+                        "src": "998:3:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                          "typeString": "struct Icu.Enterprise storage pointer"
+                        }
+                      },
+                      "id": 87,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "name",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 3,
+                      "src": "998:8:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "991:15:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 89,
+                  "nodeType": "ExpressionStatement",
+                  "src": "991:15:0"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 93,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 90,
+                      "name": "hashStr",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 77,
+                      "src": "1016:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 91,
+                        "name": "ent",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 80,
+                        "src": "1026:3:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                          "typeString": "struct Icu.Enterprise storage pointer"
+                        }
+                      },
+                      "id": 92,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "hashStr",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 5,
+                      "src": "1026:11:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "1016:21:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 94,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1016:21:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 96,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 72,
+                    "name": "entId",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 69,
+                    "src": "883:5:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  }
+                ],
+                "id": 73,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 71,
+                  "name": "out",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 39,
+                  "src": "879:3:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$_t_uint256_$",
+                    "typeString": "modifier (uint256)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "879:10:0"
+              }
+            ],
+            "name": "getEnterprise",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 70,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 69,
+                  "name": "entId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 96,
+                  "src": "852:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 68,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "852:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "851:15:0"
+            },
+            "returnParameters": {
+              "id": 78,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 75,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 96,
+                  "src": "898:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 74,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "898:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 77,
+                  "name": "hashStr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 96,
+                  "src": "911:15:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 76,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "911:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "897:30:0"
+            },
+            "scope": 97,
+            "src": "829:274:0",
+            "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 69,
-        "src": "32:768:0"
+        "scope": 98,
+        "src": "32:1073:0"
       }
     ],
-    "src": "0:1606:0"
+    "src": "0:1911:0"
   },
   "legacyAST": {
-    "absolutePath": "/Users/ysh/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol",
+    "absolutePath": "/Users/yangminghai/git_workplace/solidity/nns_icu/src/dapp/smartContract/contracts/Icu.sol",
     "exportedSymbols": {
       "Icu": [
-        68
+        97
       ]
     },
-    "id": 69,
+    "id": 98,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -990,9 +1363,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 68,
+        "id": 97,
         "linearizedBaseContracts": [
-          68
+          97
         ],
         "name": "Icu",
         "nodeType": "ContractDefinition",
@@ -1030,10 +1403,10 @@
               {
                 "constant": false,
                 "id": 5,
-                "name": "hash",
+                "name": "hashStr",
                 "nodeType": "VariableDeclaration",
                 "scope": 6,
-                "src": "198:12:0",
+                "src": "198:15:0",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1056,8 +1429,8 @@
             ],
             "name": "Enterprise",
             "nodeType": "StructDefinition",
-            "scope": 68,
-            "src": "147:70:0",
+            "scope": 97,
+            "src": "147:73:0",
             "visibility": "public"
           },
           {
@@ -1077,7 +1450,7 @@
                   "name": "from",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "288:12:0",
+                  "src": "291:12:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1088,7 +1461,7 @@
                     "id": 7,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "288:7:0",
+                    "src": "291:7:0",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1105,7 +1478,7 @@
                   "name": "enterpriseId",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "301:28:0",
+                  "src": "304:28:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1116,7 +1489,7 @@
                     "id": 9,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "301:7:0",
+                    "src": "304:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1132,7 +1505,7 @@
                   "name": "name",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "331:20:0",
+                  "src": "334:20:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1143,7 +1516,7 @@
                     "id": 11,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "331:7:0",
+                    "src": "334:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1156,10 +1529,10 @@
                   "constant": false,
                   "id": 14,
                   "indexed": false,
-                  "name": "hash",
+                  "name": "hashStr",
                   "nodeType": "VariableDeclaration",
                   "scope": 16,
-                  "src": "352:12:0",
+                  "src": "355:15:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1170,7 +1543,7 @@
                     "id": 13,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "352:7:0",
+                    "src": "355:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1180,17 +1553,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "287:78:0"
+              "src": "290:81:0"
             },
-            "src": "268:98:0"
+            "src": "271:101:0"
           },
           {
             "constant": false,
             "id": 18,
             "name": "enterprisesCount",
             "nodeType": "VariableDeclaration",
-            "scope": 68,
-            "src": "371:24:0",
+            "scope": 97,
+            "src": "377:24:0",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1201,7 +1574,7 @@
               "id": 17,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "371:7:0",
+              "src": "377:7:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -1215,8 +1588,8 @@
             "id": 22,
             "name": "enterprises",
             "nodeType": "VariableDeclaration",
-            "scope": 68,
-            "src": "401:40:0",
+            "scope": 97,
+            "src": "407:40:0",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -1229,14 +1602,14 @@
                 "id": 19,
                 "name": "uint256",
                 "nodeType": "ElementaryTypeName",
-                "src": "409:7:0",
+                "src": "415:7:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_uint256",
                   "typeString": "uint256"
                 }
               },
               "nodeType": "Mapping",
-              "src": "401:28:0",
+              "src": "407:28:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Enterprise_$6_storage_$",
                 "typeString": "mapping(uint256 => struct Icu.Enterprise)"
@@ -1247,7 +1620,7 @@
                 "name": "Enterprise",
                 "nodeType": "UserDefinedTypeName",
                 "referencedDeclaration": 6,
-                "src": "418:10:0",
+                "src": "424:10:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
                   "typeString": "struct Icu.Enterprise"
@@ -1261,7 +1634,7 @@
             "body": {
               "id": 38,
               "nodeType": "Block",
-              "src": "475:95:0",
+              "src": "481:105:0",
               "statements": [
                 {
                   "expression": {
@@ -1296,14 +1669,14 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 18,
-                            "src": "493:16:0",
+                            "src": "499:16:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
                           "nodeType": "BinaryOperation",
-                          "operator": ">",
+                          "operator": ">=",
                           "rightExpression": {
                             "argumentTypes": null,
                             "id": 28,
@@ -1311,13 +1684,13 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 24,
-                            "src": "512:5:0",
+                            "src": "519:5:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             }
                           },
-                          "src": "493:24:0",
+                          "src": "499:25:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
@@ -1343,7 +1716,7 @@
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 24,
-                            "src": "521:5:0",
+                            "src": "528:5:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
@@ -1361,7 +1734,7 @@
                             "kind": "number",
                             "lValueRequested": false,
                             "nodeType": "Literal",
-                            "src": "529:1:0",
+                            "src": "536:1:0",
                             "subdenomination": null,
                             "typeDescriptions": {
                               "typeIdentifier": "t_rational_0_by_1",
@@ -1369,13 +1742,13 @@
                             },
                             "value": "0"
                           },
-                          "src": "521:9:0",
+                          "src": "528:9:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
                           }
                         },
-                        "src": "493:37:0",
+                        "src": "499:38:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1383,7 +1756,7 @@
                       },
                       {
                         "argumentTypes": null,
-                        "hexValue": "656d70747920656e74657270726973654964",
+                        "hexValue": "656e74657270726973654964206d75737420626520656d70747920",
                         "id": 34,
                         "isConstant": false,
                         "isLValue": false,
@@ -1391,13 +1764,13 @@
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "531:20:0",
+                        "src": "538:29:0",
                         "subdenomination": null,
                         "typeDescriptions": {
-                          "typeIdentifier": "t_stringliteral_0243a560f7e4913f6c240dddc37c66af6402b1b720757de2ffc8317f87766c01",
-                          "typeString": "literal_string \"empty enterpriseId\""
+                          "typeIdentifier": "t_stringliteral_7baced1f00edf0d4aa3d902f525f0b07685b6c38bd30dda4e2053b5e466fbbc9",
+                          "typeString": "literal_string \"enterpriseId must be empty \""
                         },
-                        "value": "empty enterpriseId"
+                        "value": "enterpriseId must be empty "
                       }
                     ],
                     "expression": {
@@ -1407,19 +1780,19 @@
                           "typeString": "bool"
                         },
                         {
-                          "typeIdentifier": "t_stringliteral_0243a560f7e4913f6c240dddc37c66af6402b1b720757de2ffc8317f87766c01",
-                          "typeString": "literal_string \"empty enterpriseId\""
+                          "typeIdentifier": "t_stringliteral_7baced1f00edf0d4aa3d902f525f0b07685b6c38bd30dda4e2053b5e466fbbc9",
+                          "typeString": "literal_string \"enterpriseId must be empty \""
                         }
                       ],
                       "id": 26,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        143,
-                        144
+                        172,
+                        173
                       ],
-                      "referencedDeclaration": 144,
-                      "src": "485:7:0",
+                      "referencedDeclaration": 173,
+                      "src": "491:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
@@ -1433,7 +1806,7 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "485:67:0",
+                    "src": "491:77:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
@@ -1441,12 +1814,12 @@
                   },
                   "id": 36,
                   "nodeType": "ExpressionStatement",
-                  "src": "485:67:0"
+                  "src": "491:77:0"
                 },
                 {
                   "id": 37,
                   "nodeType": "PlaceholderStatement",
-                  "src": "562:1:0"
+                  "src": "578:1:0"
                 }
               ]
             },
@@ -1464,7 +1837,7 @@
                   "name": "entId",
                   "nodeType": "VariableDeclaration",
                   "scope": 39,
-                  "src": "461:13:0",
+                  "src": "467:13:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1475,7 +1848,7 @@
                     "id": 23,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "461:7:0",
+                    "src": "467:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1485,16 +1858,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "460:15:0"
+              "src": "466:15:0"
             },
-            "src": "448:122:0",
+            "src": "454:132:0",
             "visibility": "internal"
           },
           {
             "body": {
               "id": 66,
               "nodeType": "Block",
-              "src": "632:165:0",
+              "src": "651:171:0",
               "statements": [
                 {
                   "expression": {
@@ -1507,7 +1880,7 @@
                     "nodeType": "UnaryOperation",
                     "operator": "++",
                     "prefix": false,
-                    "src": "642:18:0",
+                    "src": "661:18:0",
                     "subExpression": {
                       "argumentTypes": null,
                       "id": 46,
@@ -1515,7 +1888,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 18,
-                      "src": "642:16:0",
+                      "src": "661:16:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1528,7 +1901,7 @@
                   },
                   "id": 48,
                   "nodeType": "ExpressionStatement",
-                  "src": "642:18:0"
+                  "src": "661:18:0"
                 },
                 {
                   "expression": {
@@ -1547,7 +1920,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 22,
-                        "src": "670:11:0",
+                        "src": "689:11:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Enterprise_$6_storage_$",
                           "typeString": "mapping(uint256 => struct Icu.Enterprise storage ref)"
@@ -1561,7 +1934,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 18,
-                        "src": "682:16:0",
+                        "src": "701:16:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1572,7 +1945,7 @@
                       "isPure": false,
                       "lValueRequested": true,
                       "nodeType": "IndexAccess",
-                      "src": "670:29:0",
+                      "src": "689:29:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_struct$_Enterprise_$6_storage",
                         "typeString": "struct Icu.Enterprise storage ref"
@@ -1590,7 +1963,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 41,
-                          "src": "713:4:0",
+                          "src": "732:4:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
                             "typeString": "bytes32"
@@ -1599,11 +1972,11 @@
                         {
                           "argumentTypes": null,
                           "id": 54,
-                          "name": "hash",
+                          "name": "hashStr",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 43,
-                          "src": "718:4:0",
+                          "src": "737:7:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes32",
                             "typeString": "bytes32"
@@ -1626,7 +1999,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 6,
-                        "src": "702:10:0",
+                        "src": "721:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_type$_t_struct$_Enterprise_$6_storage_ptr_$",
                           "typeString": "type(struct Icu.Enterprise storage pointer)"
@@ -1640,13 +2013,13 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "702:21:0",
+                      "src": "721:24:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_struct$_Enterprise_$6_memory",
                         "typeString": "struct Icu.Enterprise memory"
                       }
                     },
-                    "src": "670:53:0",
+                    "src": "689:56:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_struct$_Enterprise_$6_storage",
                       "typeString": "struct Icu.Enterprise storage ref"
@@ -1654,7 +2027,7 @@
                   },
                   "id": 57,
                   "nodeType": "ExpressionStatement",
-                  "src": "670:53:0"
+                  "src": "689:56:0"
                 },
                 {
                   "eventCall": {
@@ -1668,8 +2041,8 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 140,
-                          "src": "752:3:0",
+                          "referencedDeclaration": 169,
+                          "src": "774:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
@@ -1683,7 +2056,7 @@
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": null,
-                        "src": "752:10:0",
+                        "src": "774:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address_payable",
                           "typeString": "address payable"
@@ -1696,7 +2069,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 18,
-                        "src": "763:16:0",
+                        "src": "785:16:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -1709,7 +2082,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 41,
-                        "src": "780:4:0",
+                        "src": "802:4:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
@@ -1718,11 +2091,11 @@
                       {
                         "argumentTypes": null,
                         "id": 63,
-                        "name": "hash",
+                        "name": "hashStr",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 43,
-                        "src": "785:4:0",
+                        "src": "807:7:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes32",
                           "typeString": "bytes32"
@@ -1753,7 +2126,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 16,
-                      "src": "738:13:0",
+                      "src": "760:13:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_uint256_$_t_bytes32_$_t_bytes32_$returns$__$",
                         "typeString": "function (address,uint256,bytes32,bytes32)"
@@ -1767,7 +2140,7 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "738:52:0",
+                    "src": "760:55:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
@@ -1775,7 +2148,7 @@
                   },
                   "id": 65,
                   "nodeType": "EmitStatement",
-                  "src": "733:57:0"
+                  "src": "755:60:0"
                 }
               ]
             },
@@ -1796,7 +2169,7 @@
                   "name": "name",
                   "nodeType": "VariableDeclaration",
                   "scope": 67,
-                  "src": "599:12:0",
+                  "src": "615:12:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1807,7 +2180,7 @@
                     "id": 40,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "599:7:0",
+                    "src": "615:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1819,10 +2192,10 @@
                 {
                   "constant": false,
                   "id": 43,
-                  "name": "hash",
+                  "name": "hashStr",
                   "nodeType": "VariableDeclaration",
                   "scope": 67,
-                  "src": "612:12:0",
+                  "src": "628:15:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1833,7 +2206,7 @@
                     "id": 42,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "612:7:0",
+                    "src": "628:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1843,41 +2216,390 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "598:27:0"
+              "src": "614:30:0"
             },
             "returnParameters": {
               "id": 45,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "632:0:0"
+              "src": "651:0:0"
             },
-            "scope": 68,
-            "src": "575:222:0",
+            "scope": 97,
+            "src": "591:231:0",
             "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 95,
+              "nodeType": "Block",
+              "src": "928:175:0",
+              "statements": [
+                {
+                  "assignments": [
+                    80
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 80,
+                      "name": "ent",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 95,
+                      "src": "938:22:0",
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                        "typeString": "struct Icu.Enterprise"
+                      },
+                      "typeName": {
+                        "contractScope": null,
+                        "id": 79,
+                        "name": "Enterprise",
+                        "nodeType": "UserDefinedTypeName",
+                        "referencedDeclaration": 6,
+                        "src": "938:10:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                          "typeString": "struct Icu.Enterprise"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 84,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "baseExpression": {
+                      "argumentTypes": null,
+                      "id": 81,
+                      "name": "enterprises",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 22,
+                      "src": "963:11:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Enterprise_$6_storage_$",
+                        "typeString": "mapping(uint256 => struct Icu.Enterprise storage ref)"
+                      }
+                    },
+                    "id": 83,
+                    "indexExpression": {
+                      "argumentTypes": null,
+                      "id": 82,
+                      "name": "entId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 69,
+                      "src": "975:5:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "963:18:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Enterprise_$6_storage",
+                      "typeString": "struct Icu.Enterprise storage ref"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "938:43:0"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 88,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 85,
+                      "name": "name",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 75,
+                      "src": "991:4:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 86,
+                        "name": "ent",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 80,
+                        "src": "998:3:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                          "typeString": "struct Icu.Enterprise storage pointer"
+                        }
+                      },
+                      "id": 87,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "name",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 3,
+                      "src": "998:8:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "991:15:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 89,
+                  "nodeType": "ExpressionStatement",
+                  "src": "991:15:0"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 93,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 90,
+                      "name": "hashStr",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 77,
+                      "src": "1016:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 91,
+                        "name": "ent",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 80,
+                        "src": "1026:3:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Enterprise_$6_storage_ptr",
+                          "typeString": "struct Icu.Enterprise storage pointer"
+                        }
+                      },
+                      "id": 92,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "hashStr",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 5,
+                      "src": "1026:11:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "1016:21:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 94,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1016:21:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 96,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "argumentTypes": null,
+                    "id": 72,
+                    "name": "entId",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 69,
+                    "src": "883:5:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  }
+                ],
+                "id": 73,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 71,
+                  "name": "out",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 39,
+                  "src": "879:3:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$_t_uint256_$",
+                    "typeString": "modifier (uint256)"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "879:10:0"
+              }
+            ],
+            "name": "getEnterprise",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 70,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 69,
+                  "name": "entId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 96,
+                  "src": "852:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 68,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "852:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "851:15:0"
+            },
+            "returnParameters": {
+              "id": 78,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 75,
+                  "name": "name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 96,
+                  "src": "898:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 74,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "898:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 77,
+                  "name": "hashStr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 96,
+                  "src": "911:15:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 76,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "911:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "897:30:0"
+            },
+            "scope": 97,
+            "src": "829:274:0",
+            "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 69,
-        "src": "32:768:0"
+        "scope": 98,
+        "src": "32:1073:0"
       }
     ],
-    "src": "0:1606:0"
+    "src": "0:1911:0"
   },
   "compiler": {
     "name": "solc",
     "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
   },
   "networks": {
-    "1556155278526": {
+    "1556202645357": {
       "events": {},
       "links": {},
-      "address": "0x05175B374444bd2c2828b5318e2D10B8CC998068",
-      "transactionHash": "0x37db7701cf4f66316af8d2bbaf62b2297d0c7e43fd2a264a161716d1e7fb7de6"
+      "address": "0x75Da074314b3634DfE5F137b71641BE0a9ca5D87",
+      "transactionHash": "0xe4302f70a221aa130b93455350238fc6804f4cb89b4d99aa7218034f0f30ed5c"
     }
   },
   "schemaVersion": "3.0.6",
-  "updatedAt": "2019-04-25T01:23:45.263Z",
+  "updatedAt": "2019-04-28T14:21:53.815Z",
   "devdoc": {
     "methods": {}
   },

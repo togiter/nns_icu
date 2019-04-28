@@ -1,0 +1,2 @@
+1.Vue/Vue-cli安装 https://cn.vuejs.org/v2/guide/installation.html   https://cli.vuejs.org/zh/guide/installation.html
+2.element-UI安装， https://element.eleme.cn/2.0/#/zh-CN/component/installation

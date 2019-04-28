@@ -44,35 +44,93 @@ function hexToHash(hexStr){
 
 //字符串转bytes
 function strToBytes(str,bits){  
-    var ch, st, re = []; 
+    var bytes = new Array();  
+    var len, c;  
+    len = str.length;  
      bits = Number.parseInt(bits);
     if(bits == NaN){
         bits = 0;
     }
     let bitsLen = bytesLen(str);
     //补位
-    bits = bits - (bitsLen - str.length);
-    for (var i = 0; i < Math.max(str.length,bits); i++ ) { 
-        if(i >= str.length && i < bits){ //lenght < bits
-            re = re.concat(0); //位数不够，补0
-            continue;
+    bits = bits - bitsLen;
+    for(var i = 0; i < Math.max(len,bits); i++) {  
+        if(i >= len && i < bits){ //lenght < bits
+            c = 0x000000;//位数不够，补0
+        }else{
+            c = str.charCodeAt(i);  
         }
-        ch = str.charCodeAt(i);  // get char 
-        st = [];                 // set up "stack"  
-        do {  
-            st.push( ch & 0xFF );  // push byte to stack  
-            ch = ch >> 8;          // shift value down by 1 byte  
-         } while ( ch );  
-        // add stack contents to result  
-        // done because chars have "wrong" endianness  
-        re = re.concat( st.reverse() ); 
+        if(c >= 0x010000 && c <= 0x10FFFF) {  
+            bytes.push(((c >> 18) & 0x07) | 0xF0);  
+            bytes.push(((c >> 12) & 0x3F) | 0x80);  
+            bytes.push(((c >> 6) & 0x3F) | 0x80);  
+            bytes.push((c & 0x3F) | 0x80);  
+        } else if(c >= 0x000800 && c <= 0x00FFFF) {  
+            bytes.push(((c >> 12) & 0x0F) | 0xE0);  
+            bytes.push(((c >> 6) & 0x3F) | 0x80);  
+            bytes.push((c & 0x3F) | 0x80);  
+        } else if(c >= 0x000080 && c <= 0x0007FF) {  
+            bytes.push(((c >> 6) & 0x1F) | 0xC0);  
+            bytes.push((c & 0x3F) | 0x80);  
+        } else {  
+            bytes.push(c & 0xFF);  
+        }  
     }  
-    // return an array of bytes  
-    return re;  
+    return bytes;  
+    // var ch, st, re = []; 
+    //  bits = Number.parseInt(bits);
+    // if(bits == NaN){
+    //     bits = 0;
+    // }
+    // let bitsLen = bytesLen(str);
+    // //补位
+    // bits = bits - (bitsLen - str.length);
+    // for (var i = 0; i < Math.max(str.length,bits); i++ ) { 
+    //     if(i >= str.length && i < bits){ //lenght < bits
+    //         re = re.concat(0); //位数不够，补0
+    //         continue;
+    //     }
+    //     ch = str.charCodeAt(i);  // get char 
+    //     st = [];                 // set up "stack"  
+    //     do {  
+    //         st.push( ch & 0xFF );  // push byte to stack  
+    //         ch = ch >> 8;          // shift value down by 1 byte  
+    //      } while ( ch );  
+    //     // add stack contents to result  
+    //     // done because chars have "wrong" endianness  
+    //     re = re.concat( st.reverse() ); 
+    // }  
+    // // return an array of bytes  
+    // return re;  
 } 
+
+function bytesToStr(arr) {
+    if(typeof arr === 'string') {
+        return arr;
+    }
+    var str = '',
+        _arr = arr;
+    for(var i = 0; i < _arr.length; i++) {
+        var one = _arr[i].toString(2),
+            v = one.match(/^1+?(?=0)/);
+        if(v && one.length == 8) {
+            var bytesLength = v[0].length;
+            var store = _arr[i].toString(2).slice(7 - bytesLength);
+            for(var st = 1; st < bytesLength; st++) {
+                store += _arr[st + i].toString(2).slice(2);
+            }
+            str += String.fromCharCode(parseInt(store, 2));
+            i += bytesLength - 1;
+        } else {
+            str += String.fromCharCode(_arr[i]);
+        }
+    }
+    return str;
+}
 
 export {
     hashToHex,
     hexToHash,
-    strToBytes
+    strToBytes,
+    bytesToStr
 }

@@ -54,9 +54,11 @@
         },
         created(){
             console.log('fdsfds');
-            web3GetEnterprise(1,(err,val)=>{
-                
+            for(let i = 1;i < 15;i++){
+            web3GetEnterprise(i,(err,val)=>{
+
             });
+            }
         },
         mounted(){
 
