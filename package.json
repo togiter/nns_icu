@@ -8,6 +8,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "github:tensorflow/tfjs",
     "bs58": "^4.0.1",
     "core-js": "^2.6.5",
     "cube-ui": "~1.12.15",
