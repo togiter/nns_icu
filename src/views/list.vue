@@ -1,7 +1,7 @@
 <template>
-<div class="list">
+<div style="backgroud-color:red" class="list">
 <p>{{total}}</p>
- <!-- <div class="scroll-list-wrap">
+ <div class="scroll-list-wrap">
    <scroll ref="scroll"
            :data="list"
            :scroll-events="['scroll']"
@@ -9,9 +9,12 @@
            @pulling-down="onPullingDown"
            @pulling-up="onPullingUp"
            @scroll="onScrollHandle">
-
+     <ul class="list-wrapper">
+         <br>
+         <li v-for="item in list" :key="item.name" class="list-item">{{item.name}}--{{item.addr}}--{{item.workSystem}}</li>
+         </ul>
    </scroll>
- </div> -->
+ </div>
 </div>
 </template>
 
@@ -53,7 +56,7 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
             return this.optionsObj;
           }
         },
-        create(){
+        created(){
             console.log('wecome list');
             this.getCount();
         },
@@ -78,7 +81,7 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
                         console.log("error for ents count：",err);
                         return;
                     }
-                    let count = result.enterprisesCount; //big Number
+                    let count = result;
                     console.log('count',count);
                     this.total = count;
                     this.getEnterprises(this.pageNo);
@@ -92,19 +95,22 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
             },
             //获取分页企业
             getEnterprises(pageNo){
-                if(this.loading) return;
-                this.loading = true;
+                // if(this.loading==true) return;
+                // this.loading = true;
                 let page = Math.max(1,pageNo);
                 //当前已存在的数量
                 const count = this.list.length;
                 let remain = count + Math.min(PAGE_SIZE,this.total-count);
-                for (let i = count;i < remain;++i){
+                console.log('count',count,remain);
+                //企业Id从1开始
+                for (let i = Math.max(1,count);i <= remain;++i){
                     web3GetEnterprise(i,(err,result)=>{
-                        
+                
+                        if(!err){
+                            this.list.push(JSON.parse(result));
+                            // this.loading = false;
+                        }
                     });
-                    if(i == remain - 1){
-                        this.loading = false;
-                    }
 
                 }
 
@@ -124,5 +130,8 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
 </script>
 
 <style scoped>
-
+.scroll-list-wrap{
+    background-color: aquamarine;
+     height: 450px;
+}
 </style>

@@ -1,6 +1,8 @@
 import {web3,contract} from './web2eth'
+
 import {hexToHash,hashToHex,strToBytes,bytesToStr,uint8ArrayToStr} from '../../utils/convert'
 import {dfsCat} from '../dfs/dfs'
+let BN = require('big-number')
 let defaultAccount;
 web3.eth.getAccounts().then((err,values)=>{
     console.log('accounts',err,values);
@@ -130,6 +132,11 @@ function web3GetEnterprise(enterpriseId,callback){
      console.log("hashStr",hash);
      dfsCat(hash,(err,result)=>{
         console.log(err,'resulthere',uint8ArrayToStr(result));
+        // callback(err,uint8ArrayToStr(result));
+        if(typeof callback === 'function'){
+            //uint8ArrayToStr
+            callback(err,uint8ArrayToStr(result));
+        }
      });
    });
 }
@@ -149,8 +156,15 @@ function web3QueryEnterpriseName(name,callback) {
 function web3GetEnterprisesCount(callback){
     contract.methods.getEnterprisesCount().call({from:defaultAccount},(err,result)=>{
         console.log('err',err,'result',result)
-        // let bn = new BigInt(result);
-        // console.log('bn',bn.toString());
+
+        if( typeof callback == 'function'){
+            let count = 0;
+            if(!err){
+                //bigNumber to string to int
+                count = Number.parseInt(result.toString(10));
+            }
+            callback(err,count);
+        }
     });
 }
 

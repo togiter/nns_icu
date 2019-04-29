@@ -53,15 +53,7 @@
             }
         },
         created(){
-            web3GetEnterprisesCount((err,val)=>{
-
-            });
-            console.log('fdsfds');
-            for(let i = 1;i < 15;i++){
-            web3GetEnterprise(i,(err,val)=>{
-
-            });
-            }
+    
         },
         mounted(){
 
