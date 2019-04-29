@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <button @click="gotoEntSave">添加企业</button>
-    <button @click="gotoupload">upload</button>
+    <button @click="gotoList">企业列表</button>
   </div>
 </template>
 
@@ -13,16 +13,16 @@ export default {
 
   },
     methods:{
-      
+
         gotoEntSave:function () {
             this.$router.push({
                 path:'/save',
                 query:{}
             })
         },
-        gotoupload:function () {
+        gotoList:function () {
             this.$router.push({
-                path:'/upload',
+                path:'/list',
                 query:{}
             })
         }

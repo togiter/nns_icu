@@ -33,7 +33,7 @@
     import Upload from "cube-ui/src/components/upload/upload";
     import {dfsAdd,dfsCat} from './../dapp/dfs/dfs'
     import DFS from './../consts/urls'
-    import {web3SaveEnterprise,web3GetEnterprise} from './../dapp/web3/icu-contract'
+    import {web3SaveEnterprise,web3GetEnterprise,web3GetEnterprisesCount} from './../dapp/web3/icu-contract'
     export default {
         name: "save",
         components: {Input,Upload},
@@ -53,6 +53,9 @@
             }
         },
         created(){
+            web3GetEnterprisesCount((err,val)=>{
+
+            });
             console.log('fdsfds');
             for(let i = 1;i < 15;i++){
             web3GetEnterprise(i,(err,val)=>{
@@ -106,7 +109,7 @@
                 console.log('msgjson',msgJson);
                 //上传到分布式文件系统获取hash
                 dfsAdd(msgJson, (err, values) => {
-                    console.log('err-value',err, values);
+                    console.log('dfsAdd msgJSON err-value',err, values);
                     let hash = values[0].hash;
                      this.loading = false;
                     web3SaveEnterprise(this.name,hash,(error,result)=>{
@@ -141,7 +144,8 @@
                 console.log("file", file);
 
                 dfsAdd(file.base64Value, (err, values) => {
-                    /*values [{hash: "QmehpnnP9KKfV7rhnaKmmZ8rFqBpvhSAtosWb1xEtotwNJ"
+                    /*values [
+                     *{hash: "QmehpnnP9KKfV7rhnaKmmZ8rFqBpvhSAtosWb1xEtotwNJ"
                      * path: "QmehpnnP9KKfV7rhnaKmmZ8rFqBpvhSAtosWb1xEtotwNJ"
                      * size: 229}]
                     */

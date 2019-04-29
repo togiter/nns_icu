@@ -12,11 +12,6 @@ export default new Router({
       name: 'home',
       component: Home,
     },
-      {
-          path: '/upload',
-          name: 'upload',
-          component: () => import('./views/upload.vue')
-      },
       // {
       //     path: '/saveEnterprise',
       //     name: 'saveEnterprise',
@@ -26,6 +21,11 @@ export default new Router({
           path: '/save',
           name: 'save',
           component: () => import('./views/save.vue')
+      },
+      {
+          path: '/list',
+          name: 'list',
+          component: () => import('./views/list.vue')
       }
 
   ]

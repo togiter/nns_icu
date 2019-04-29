@@ -30,6 +30,7 @@ function hashToHex(dfs_hash){
 *
 */ 
 function hexToHash(hexStr){
+    if(hexStr === 'undefined' || hexStr == null) return "";
     if(typeof hexStr != 'string'){
         hexStr = hexStr.toString(); //先转为字符串再去0/0x
     }
@@ -77,31 +78,7 @@ function strToBytes(str,bits){
         }  
     }  
     return bytes;  
-    // var ch, st, re = []; 
-    //  bits = Number.parseInt(bits);
-    // if(bits == NaN){
-    //     bits = 0;
-    // }
-    // let bitsLen = bytesLen(str);
-    // //补位
-    // bits = bits - (bitsLen - str.length);
-    // for (var i = 0; i < Math.max(str.length,bits); i++ ) { 
-    //     if(i >= str.length && i < bits){ //lenght < bits
-    //         re = re.concat(0); //位数不够，补0
-    //         continue;
-    //     }
-    //     ch = str.charCodeAt(i);  // get char 
-    //     st = [];                 // set up "stack"  
-    //     do {  
-    //         st.push( ch & 0xFF );  // push byte to stack  
-    //         ch = ch >> 8;          // shift value down by 1 byte  
-    //      } while ( ch );  
-    //     // add stack contents to result  
-    //     // done because chars have "wrong" endianness  
-    //     re = re.concat( st.reverse() ); 
-    // }  
-    // // return an array of bytes  
-    // return re;  
+    
 } 
 
 function bytesToStr(arr) {
