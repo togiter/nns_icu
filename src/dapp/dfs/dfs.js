@@ -110,7 +110,8 @@ function dfsCat(ipfsPath,callback) {
         console.log('hash can not be empty!')
         return;
     }
-    if(callback && typeof callback ==  'function'){
+    if(callback && typeof callback == 'function'){
+      console.log("callback");
         dfs.cat(ipfsPath,callback);
     }else {
         return new Promise(dfs.cat(ipfsPath));

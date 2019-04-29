@@ -6,22 +6,35 @@ contract Icu{
     */
     struct Enterprise{
         bytes32  name; 
-        bytes32 hash;
+        bytes32 hashStr;
     }
     //检索(name)通过日记结构来进行
-    event logEnterprise(address from,uint256 indexed enterpriseId, bytes32 indexed name,bytes32 hash);
+    event logEnterprise(address from,uint256 indexed enterpriseId, bytes32 indexed name,bytes32 hashStr);
     uint256 enterprisesCount;
     mapping(uint256=>Enterprise) enterprises;
 
     modifier out(uint256 entId){
-        require(enterprisesCount > entId && entId > 0,"empty enterpriseId");
+        require(enterprisesCount >= entId && entId > 0,"enterpriseId must be empty ");
         _;
     }
-    function saveEnterprise(bytes32 name,bytes32 hash) public{
+    function saveEnterprise(bytes32 name,bytes32 hashStr) public{
         enterprisesCount++;
-        enterprises[enterprisesCount] = Enterprise(name,hash);
-        emit logEnterprise(msg.sender,enterprisesCount,name,hash);
+        enterprises[enterprisesCount] = Enterprise(name,hashStr);
+        emit logEnterprise(msg.sender,enterprisesCount,name,hashStr);
     } 
+
+    function getEnterprise(uint256 entId) public view out(entId) returns(bytes32 name,bytes32 hashStr) {
+        Enterprise storage ent = enterprises[entId];
+        name = ent.name;
+        hashStr = ent.hashStr;
+        
+
+        //return (ent.name,ent.hashStr);
+    }
+
+    function getEnterprisesCount() public view returns (uint256){
+        return enterprisesCount;
+    }
 }
 /*
 *事件，日志这两个概念。事件发生后被记录到区块链上成为了日志。总的来说，事件强调功能，一种行为；日志强调存储，内容。

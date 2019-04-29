@@ -13,7 +13,7 @@ const contractJson = require('./../smartContract/build/contracts/Icu.json')
 var web3;
 var contract;
 loadWeb3(WEB3_URL);
-let addr = '0x1B3EF204c897A421b915E071167036b024f27Ea9';
+let addr = '0x06ae98cad4C842c85Ce56c753CeEbCeF1e04004c';
 console.log('cj',contractJson);
 getContract(contractJson['abi'],addr);
 //contractEvent();

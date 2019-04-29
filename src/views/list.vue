@@ -1,5 +1,7 @@
 <template>
- <div class="scroll-list-wrap">
+<div class="list">
+<p>{{total}}</p>
+ <!-- <div class="scroll-list-wrap">
    <scroll ref="scroll"
            :data="list"
            :scroll-events="['scroll']"
@@ -9,7 +11,8 @@
            @scroll="onScrollHandle">
 
    </scroll>
- </div>
+ </div> -->
+</div>
 </template>
 
 <script>
@@ -51,7 +54,8 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
           }
         },
         create(){
-
+            console.log('wecome list');
+            this.getCount();
         },
         methods:{
             //下拉
@@ -75,7 +79,9 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
                         return;
                     }
                     let count = result.enterprisesCount; //big Number
-
+                    console.log('count',count);
+                    this.total = count;
+                    this.getEnterprises(this.pageNo);
 
                });
             },
@@ -91,9 +97,12 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
                 let page = Math.max(1,pageNo);
                 //当前已存在的数量
                 const count = this.list.length;
-                for (let i = count;i < count + PAGE_SIZE;++i){
-
-                    if(i == count + PAGE_SIZE - 1){
+                let remain = count + Math.min(PAGE_SIZE,this.total-count);
+                for (let i = count;i < remain;++i){
+                    web3GetEnterprise(i,(err,result)=>{
+                        
+                    });
+                    if(i == remain - 1){
                         this.loading = false;
                     }
 

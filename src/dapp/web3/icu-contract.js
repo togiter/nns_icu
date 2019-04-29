@@ -1,5 +1,5 @@
 import {web3,contract} from './web2eth'
-import {hexToHash,hashToHex,strToBytes,bytesToStr} from '../../utils/convert'
+import {hexToHash,hashToHex,strToBytes,bytesToStr,uint8ArrayToStr} from '../../utils/convert'
 import {dfsCat} from '../dfs/dfs'
 let defaultAccount;
 web3.eth.getAccounts().then((err,values)=>{
@@ -10,7 +10,7 @@ web3.eth.getAccounts().then((err,values)=>{
 });
 console.log('defautAccount:',defaultAccount);
 if(defaultAccount === 'undefined' || defaultAccount == null){
-    defaultAccount = '0x8059c1773d9065b2e1c567be9849c46953eb264a';
+    defaultAccount = '0xfc69dc06c55487f0438539a9306799b7be51e038';
 }
 
 
@@ -91,8 +91,11 @@ function web3SaveEnterprise(name,hash,callback){
      //字符数组转字符串
      name = bytesToStr(name);
 
-     let hash = hexToHash(returnVals.hash);
+     let hash = hexToHash(returnVals.hashStr);
      console.log("orgi Hash",hash);
+     dfsCat(hash,(err,resp)=>{
+        console.log("hash err resp",err,uint8ArrayToStr(resp));
+     });
      console.log(name,'-保存成功-',result);
      dfsCat(hash,(err,result)=>{
         console.log('err',err);
@@ -126,7 +129,7 @@ function web3GetEnterprise(enterpriseId,callback){
        let hash = hexToHash(hexHash);
      console.log("hashStr",hash);
      dfsCat(hash,(err,result)=>{
-        console.log(err,err,'resulthere',result);
+        console.log(err,'resulthere',uint8ArrayToStr(result));
      });
    });
 }
@@ -146,6 +149,8 @@ function web3QueryEnterpriseName(name,callback) {
 function web3GetEnterprisesCount(callback){
     contract.methods.getEnterprisesCount().call({from:defaultAccount},(err,result)=>{
         console.log('err',err,'result',result)
+        // let bn = new BigInt(result);
+        // console.log('bn',bn.toString());
     });
 }
 

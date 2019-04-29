@@ -30,6 +30,7 @@ function hashToHex(dfs_hash){
 *
 */ 
 function hexToHash(hexStr){
+    console.log("hexStr",hexStr);
     if(hexStr === 'undefined' || hexStr == null) return "";
     if(typeof hexStr != 'string'){
         hexStr = hexStr.toString(); //先转为字符串再去0/0x
@@ -81,6 +82,7 @@ function strToBytes(str,bits){
     
 } 
 
+//bytes转string
 function bytesToStr(arr) {
     if(typeof arr === 'string') {
         return arr;
@@ -105,9 +107,43 @@ function bytesToStr(arr) {
     return str;
 }
 
+function uint8ArrayToStr(fileData){
+    var out, i, len, c;
+var char2, char3;
+
+out = "";
+len = fileData.length;
+i = 0;
+while(i < len) {
+c = fileData[i++];
+switch(c >> 4)
+{ 
+case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+// 0xxxxxxx
+out += String.fromCharCode(c);
+break;
+case 12: case 13:
+// 110x xxxx 10xx xxxx
+char2 = fileData[i++];
+out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+break;
+case 14:
+// 1110 xxxx 10xx xxxx 10xx xxxx
+char2 = fileData[i++];
+char3 = fileData[i++];
+out += String.fromCharCode(((c & 0x0F) << 12) |
+((char2 & 0x3F) << 6) |
+((char3 & 0x3F) << 0));
+break;
+}
+}
+return out;
+}
+
 export {
     hashToHex,
     hexToHash,
     strToBytes,
-    bytesToStr
+    bytesToStr,
+    uint8ArrayToStr
 }
