@@ -1,6 +1,10 @@
 <template>
 <div style="backgroud-color:red" class="list">
-<p>{{total}}</p>
+
+    <div style="background-color: gainsboro;padding: 12px 10px;text-align: left;vertical-align: center;"><p>上链企业总数:<span class="content-span">{{total}}</span></p>
+        <br>
+        <div><input style="height: 32px;padding-left: 5px" placeholder="查询企业名称" v-model="searchName"></input><button @click="queryEnterprise" style="background-color: green;height: 32px;width: 55px">查询</button></div>
+    </div>
  <div class="scroll-list-wrap">
    <scroll ref="scroll"
            :data="list"
@@ -9,9 +13,26 @@
            @pulling-down="onPullingDown"
            @pulling-up="onPullingUp"
            @scroll="onScrollHandle">
-     <ul class="list-wrapper">
-         <br>
-         <li v-for="item in list" :key="item.name" class="list-item">{{item.name}}--{{item.addr}}--{{item.workSystem}}</li>
+     <ul class="list-wrapper" v-for="(item,i) in list" :key="i">
+         <div class="content">
+             <p>企业名称:<span class="content-span">{{item.name}}</span></p>
+             <br>
+             <p>地址:<span class="content-span">{{item.addr}}</span></p>
+             <br>
+             <p>工作制度:<span class="content-span">{{item.workSystem}}</span></p>
+             <br>
+             <p>名单类型:<span class="content-span">{{item.colorType}}</span></p>
+             <br>
+             <p>工作描述:<span class="content-span" style="line-height: 20px" >{{item.desc}}</span></p>
+             <br>
+             <section v-if="item.imgs.length > 0">
+                 <p>证据/证明/截图</p>
+             <ul v-for="(url,j) in item.imgs" :key="j">
+                 <li ><span style="width: 88%; color: cadetblue;font-size: 13px" @click="catHash(url)">{{url}}</span></li>
+             </ul>
+             </section>
+         </div>
+         <hr />
          </ul>
    </scroll>
  </div>
@@ -29,12 +50,15 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
   */
     import {web3QueryEnterpriseName,web3GetEnterprisesCount,web3GetEnterprise} from './../dapp/web3/icu-contract'
     import Scroll from "cube-ui/src/components/scroll/scroll";
+ import Input from "cube-ui/src/components/input/input";
+ import Button from "cube-ui/src/components/button/button";
     const PAGE_SIZE = 30; //页数
     export default {
         name: "list",
-        components: {Scroll},
+        components: {Button, Input, Scroll},
         data(){
             return {
+                searchName:"", //搜索企业名称
                 loading:false,
                 pageNo:1,    //当前页
                 total:0,  //总条数
@@ -61,6 +85,13 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
             this.getCount();
         },
         methods:{
+
+            //查看图片
+            catHash(url){
+                console.log('url',url);
+                url ='http://127.0.0.1:8080/ipfs/QmfQkD8pBSBCBxWEwFSu4XaDVSWK6bjnNuaWZjMyQbyDub/#/files/IMG_0058.JPG';
+
+            },
             //下拉
             onPullingDown(){
                 console.log('onPullingdown');
@@ -90,8 +121,17 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
             },
 
             //搜索企业
-            queryEnterprise(name){
+            queryEnterprise(){
+                let name = this.searchName;
+                console.log('name',name)
+                if(name.trim().length <= 0) return;
+                web3QueryEnterpriseName(name,(err,result)=>{
+                    if(!err){
+                        this.list = [];
+                        this.list.push(JSON.parse(result));
 
+                    }
+                });
             },
             //获取分页企业
             getEnterprises(pageNo){
@@ -105,7 +145,7 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
                 //企业Id从1开始
                 for (let i = Math.max(1,count);i <= remain;++i){
                     web3GetEnterprise(i,(err,result)=>{
-                
+
                         if(!err){
                             this.list.push(JSON.parse(result));
                             // this.loading = false;
@@ -131,7 +171,22 @@ pullDownRefresh和pullUpLoad对象的所有配置项和含义见 Props 配置
 
 <style scoped>
 .scroll-list-wrap{
-    background-color: aquamarine;
-     height: 450px;
+   background-color: rgba(0,0,0,0.02);
+     height: 100%;
 }
+    .content{
+        text-align: left;
+        padding: 12px 12px;
+        vertical-align: center;
+    }
+    .content p{
+        font-size: 14px;
+        color: gray;
+    }
+    .content-span{
+        font-size: 15px;
+        color: black;
+        padding-left: 10px;
+
+    }
 </style>

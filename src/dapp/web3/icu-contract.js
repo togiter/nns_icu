@@ -12,7 +12,7 @@ web3.eth.getAccounts().then((err,values)=>{
 });
 console.log('defautAccount:',defaultAccount);
 if(defaultAccount === 'undefined' || defaultAccount == null){
-    defaultAccount = '0xfc69dc06c55487f0438539a9306799b7be51e038';
+    defaultAccount = '0x56883a96436de5fa5fdfaef9e470dafb0a8bc609';
 }
 
 
@@ -46,7 +46,7 @@ _hex: "0x04"
 _ethersType: "BigNumber"
 __proto__: Object
 from: "0x8059c1773d9065B2e1C567BE9849C46953EB264A"
-hash: "0x9a422be289a5c7fc13fd8f46ad012e12d8f45884d1568914043057acbc00bb62"
+hashStr: "0x9a422be289a5c7fc13fd8f46ad012e12d8f45884d1568914043057acbc00bb62"
 name: "0xe4baace4b89c0000000000000000000000000000000000000000000000000000"
 __proto__: Object
 signature: "0x3edf6caca4ece5fadb1fbae8b9b041b20da53367ea7753e5a704c9a5d024b175"
@@ -141,12 +141,77 @@ function web3GetEnterprise(enterpriseId,callback){
    });
 }
 
+/** 
+*根据名单类型查询企业列表
+*colorType -1 黑名单，0，灰名单，1白名单
+*返回指定名单的企业列表
+*callback(err,list)
+*/
+function web3QueryEnterprisesType(colorType,callback){//按区块跨度查询也不靠谱...
+    contract.getPastEvents('logEnterprise',{
+        filter:{
+            colorType:colorType
+        }},
+        (err,result)=>{
+            console.log('enterpriseType',err,result);
+            if(err){
+                callback(err,null);
+                return;
+            }
+           
+            let vals = result.returnValues;
+            
+
+        }
+    ).then(result=>{
+
+    });
+}
+
 /**
 *根据名称查询企业
 * @param name 企业名称
  */
 function web3QueryEnterpriseName(name,callback) {
+    let bytes64 = strToBytes('',64);
+    let str64 = bytes64.toString().replace(/,/g,'');//全局替换','
+    let nameHex = web3.utils.toHex(name); //转为16进制
+    name = nameHex + str64.substring(nameHex.length-2); //-2表示前面0x位数
 
+    console.log('namehex',name);
+   // name = '0x' + name.toString('hex').replace(/^1220/,'');
+    // console.log('nameHex',name);
+     contract.getPastEvents('logEnterprise',{
+         filter:{
+             name:name
+         }
+     },(err,result)=>{
+         console.log('event err/result',err,result);
+         if(err){
+             callback(err,null);
+             return;
+         }
+         if(result.length <= 0){
+             callback(err,null);
+             return;
+         }
+         //获取返回值
+         let returnVals = result[0].returnValues;
+         let name = returnVals.name;
+         //解码hex到字符数组
+         name = web3.utils.hexToBytes(name);
+         //字符数组转字符串
+         name = bytesToStr(name);
+
+         let hash = hexToHash(returnVals.hashStr);
+         dfsCat(hash,(err,resp)=>{
+             console.log("ipfs err resp",err,uint8ArrayToStr(resp));
+             callback(err,uint8ArrayToStr(resp));
+         });
+
+     }).then(events=>{
+         console.log("events",events);
+     });
 }
 
 /**
@@ -173,4 +238,5 @@ export {
     web3GetEnterprise,
     web3GetEnterprisesCount,
     web3QueryEnterpriseName,
+    web3QueryEnterprisesType
 }

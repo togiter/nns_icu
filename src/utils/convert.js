@@ -3,11 +3,11 @@ import {bytesLen} from './util';
 const bs58 = require('bs58')  //base58 加密货币常用编码 npm i --save bs58
 //参考 https://www.jianshu.com/p/b39a4aed3663
 /*string -- bytes32 处理过程：
-*String => Hex => 32 length Hex (ie. 64 length HexString) => byte[] => Bytes32
+*String => Hex => 32 length Hex (ie. 64 length HexString) => byte[] => Bytes32.注意：00 等于1个Hex长度或者2个String长度。
 */
 
 /*
-*ipfs/btc/etc的hash值是base58编码的，长度大于32位，不能直接转bytes32，先解码再进行转换
+*ipfs/btc/etc的hash值是base58编码的，长度大于32位，不能直接转bytes32，先解码再进行转换.
 * hash to hex
 */
 function hashToHex(dfs_hash){
@@ -26,9 +26,9 @@ function hashToHex(dfs_hash){
 
 /*
 *hexStr 2 hash
-*     
 *
-*/ 
+*
+*/
 function hexToHash(hexStr){
     console.log("hexStr",hexStr);
     if(hexStr === 'undefined' || hexStr == null) return "";
@@ -45,10 +45,10 @@ function hexToHash(hexStr){
 }
 
 //字符串转bytes
-function strToBytes(str,bits){  
-    var bytes = new Array();  
-    var len, c;  
-    len = str.length;  
+function strToBytes(str,bits){
+    var bytes = new Array();
+    var len, c;
+    len = str.length;
      bits = Number.parseInt(bits);
     if(bits == NaN){
         bits = 0;
@@ -56,31 +56,31 @@ function strToBytes(str,bits){
     let bitsLen = bytesLen(str);
     //补位
     bits = bits - bitsLen;
-    for(var i = 0; i < Math.max(len,bits); i++) {  
+    for(var i = 0; i < Math.max(len,bits); i++) {
         if(i >= len && i < bits){ //lenght < bits
             c = 0x000000;//位数不够，补0
         }else{
-            c = str.charCodeAt(i);  
+            c = str.charCodeAt(i);
         }
-        if(c >= 0x010000 && c <= 0x10FFFF) {  
-            bytes.push(((c >> 18) & 0x07) | 0xF0);  
-            bytes.push(((c >> 12) & 0x3F) | 0x80);  
-            bytes.push(((c >> 6) & 0x3F) | 0x80);  
-            bytes.push((c & 0x3F) | 0x80);  
-        } else if(c >= 0x000800 && c <= 0x00FFFF) {  
-            bytes.push(((c >> 12) & 0x0F) | 0xE0);  
-            bytes.push(((c >> 6) & 0x3F) | 0x80);  
-            bytes.push((c & 0x3F) | 0x80);  
-        } else if(c >= 0x000080 && c <= 0x0007FF) {  
-            bytes.push(((c >> 6) & 0x1F) | 0xC0);  
-            bytes.push((c & 0x3F) | 0x80);  
-        } else {  
-            bytes.push(c & 0xFF);  
-        }  
-    }  
-    return bytes;  
-    
-} 
+        if(c >= 0x010000 && c <= 0x10FFFF) {
+            bytes.push(((c >> 18) & 0x07) | 0xF0);
+            bytes.push(((c >> 12) & 0x3F) | 0x80);
+            bytes.push(((c >> 6) & 0x3F) | 0x80);
+            bytes.push((c & 0x3F) | 0x80);
+        } else if(c >= 0x000800 && c <= 0x00FFFF) {
+            bytes.push(((c >> 12) & 0x0F) | 0xE0);
+            bytes.push(((c >> 6) & 0x3F) | 0x80);
+            bytes.push((c & 0x3F) | 0x80);
+        } else if(c >= 0x000080 && c <= 0x0007FF) {
+            bytes.push(((c >> 6) & 0x1F) | 0xC0);
+            bytes.push((c & 0x3F) | 0x80);
+        } else {
+            bytes.push(c & 0xFF);
+        }
+    }
+    return bytes;
+
+}
 
 //bytes转string
 function bytesToStr(arr) {
@@ -117,7 +117,7 @@ i = 0;
 while(i < len) {
 c = fileData[i++];
 switch(c >> 4)
-{ 
+{
 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
 // 0xxxxxxx
 out += String.fromCharCode(c);

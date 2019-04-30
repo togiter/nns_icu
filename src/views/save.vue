@@ -1,8 +1,8 @@
 <template>
     <div class="save">
-        <h2>添加企业<span style="color: gray;font-size: 12px">所有输入均不超过16中文</span></h2>
+        <h2>添加企业<span style="color: gray;font-size: 12px">输入框均不超过16中文或32英文</span></h2>
         <br>
-        <Input placeholder="企业名称(阿里爹爹)" v-model="name" />
+        <Input placeholder="企业名称(不超过16中文或32英文)" v-model="name" />
         <Input placeholder="地址(如杭州某处)" v-model="addr" />
         <Input placeholder="工作制度(如996/995)" v-model="workSystem" />
         <cube-select
@@ -14,8 +14,11 @@
                 @click="selectClicked">
         </cube-select>
         <br>
+        <textarea style="margin: 0px; padding: 5px 5px; width: 93%;height: 60px;border-color: beige;border-width: 1px;" placeholder="工作描述(300字以内)" v-model="desc">
+
+        </textarea>
         <div style="margin: 10px 10px;">
-         <p style="text-align: left;padding-bottom: 8px;">上传图片<span style="color: gray;font-size: 12px">(公告，截图，其他证据等)</span></p>
+         <p style="text-align: left;padding-bottom: 8px;color: gray">上传图片<span style="color: gray;font-size: 12px">(公告，截图，其他证据等)</span></p>
         <Upload ref="upload"
                 :action="action"
                 :simultaneous-uploads="2"
@@ -45,6 +48,7 @@
                 name:"",
                 addr:"",
                 workSystem:"",
+                desc:"",
                 imgs:[],//存储图片hash
                 action:{
                     target:DFS,
@@ -53,7 +57,7 @@
             }
         },
         created(){
-    
+
         },
         mounted(){
 
@@ -62,6 +66,7 @@
         toastText(text){
             const toast = this.$createToast({
             time: 1000,
+                type:'txt',
              txt: text
              })
              toast.show()
@@ -72,22 +77,26 @@
                     console.log("loading");
                     return;
                 }
-                const limitNum = 16;
-                if(this.name.Trim().lenght <= 0 || this.name.Trim().lenght > limitNum){
-                     toastText('输入16字符内的企业名称');
+                const limitNum = 32;
+                if(this.name.bytesLen() <= 0 || this.name.bytesLen() > limitNum){
+                     this.toastText('请输入限制字数内的企业名称');
                      return;
                 }
-                if(this.addr.Trim().lenght <= 0 || this.addr.Trim().lenght > limitNum){
-                     toastText('输入16字符内的企业地址');
+                if(this.addr.bytesLen() <= 0 || this.addr.bytesLen() > limitNum){
+                    this.toastText('请输入限制字数内的企业地址');
                      return;
                 }
-                if(this.workSystem.Trim().lenght <= 0 || this.workSystem.Trim().lenght > limitNum){
-                     toastText('输入16字符内的工作制度');
+                if(this.workSystem.bytesLen() <= 0 || this.workSystem.bytesLen() > limitNum){
+                    this.toastText('请输入限制字数内的工作制度');
                      return;
                 }
                 if( Number.parseInt(this.colorType) < 0 || Number.parseInt(this.colorType) >= this.colorTypes.lenght){
-                      toastText('选择企业所属的名单类型');
+                    this.toastText('选择企业所属的名单类型');
                      return;
+                }
+                if(this.desc.bytesLen() > 600) {//300汉字
+                    this.toastText('工作描述不得超过300中文/600英文');
+                    return;
                 }
                 this.loading = true;
                 let msg = {
@@ -95,6 +104,7 @@
                     addr:this.addr,
                     colorType:this.colorType,
                     workSystem:this.workSystem,
+                    desc:this.desc,
                     imgs:this.imgs
                 }
                 let msgJson = JSON.stringify(msg);
@@ -109,7 +119,7 @@
                       this.loading = false;
                 });
                 });
-               
+
             },
             colorTypeChange(value, index, text) {
                 console.log('change', value, index, text)
@@ -143,11 +153,11 @@
                     */
                     console.log(err, values);
                     if(!err){
-                        this.imgs.push(values[0].hash);    
+                        this.imgs.push(values[0].hash);
                         }
                     dfsCat(values[0].hash, (e, v) => {
                         console.log("cat", v.toString(), e);
-                        
+
                     });
                 });
             }
